@@ -12,7 +12,7 @@ class Teams(Base):
     id = Column(Integer, primary_key=True)
     team_name = Column(String, unique=True)
     team_members = Column(String)
-    grade = Column(Integer)
+    grade = Column(String)
     t1 = Column(Integer)
     t2 = Column(Integer)
     t3 = Column(Integer)
