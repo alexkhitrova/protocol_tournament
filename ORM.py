@@ -10,7 +10,7 @@ Base = declarative_base()
 class Teams(Base):
     __tablename__ = 'teams67'
     id = Column(Integer, primary_key=True)
-    team_name = Column(String)
+    team_name = Column(String, unique=True)
     team_members = Column(String)
     grade = Column(Integer)
     t1 = Column(Integer)
