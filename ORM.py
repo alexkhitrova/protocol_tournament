@@ -8,14 +8,13 @@ Base = declarative_base()
 
 
 class Teams(Base):
-    __tablename__ = 'teams67'
+    __tablename__ = 'teams'
     id = Column(Integer, primary_key=True)
     team_name = Column(String, unique=True)
     team_members = Column(String)
-    grade = Column(String)
-    t1 = Column(Integer)
-    t2 = Column(Integer)
-    t3 = Column(Integer)
+    grades = Column(String)
+    max_grade = Column(Integer)
+    tasks = Column(String, default="0 0 0 0 0 0")
 
 
 Base.metadata.create_all(engine)  # sends CREATE TABLE

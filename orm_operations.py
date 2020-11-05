@@ -1,35 +1,28 @@
-from ORM import Session,Teams
+from ORM import Session, Teams
 from sqlalchemy.exc import IntegrityError
 
-def register_team(name, team, grade):
+
+def register_team(name, team, grade, max_grade):
     s = Session()
-    s.add(Teams(team_name=name, team_members=team, grade=grade))
+    s.add(Teams(team_name=name, team_members=team, grades=grade, max_grade=max_grade))
     try:
         s.commit()
         return True
     except IntegrityError:
         return False
 
-def get_table():
-    s = Session()
-    return s.query(Teams).all()
-
 
 def give_point(team_name, task, point):
     s = Session()
-    db = s.query(Teams).filter(Teams.team_name == team_name).first()
-    if task==1:
-        s.query(Teams).filter(Teams.team_name == team_name).update({Teams.t1: point})
-    if task==2:
-        s.query(Teams).filter(Teams.team_name == team_name).update({Teams.t2: point})
-    if task==3:
-        s.query(Teams).filter(Teams.team_name == team_name).update({Teams.t3: point})
+    team = s.query(Teams).filter(Teams.team_name == team_name).first()
+    tasks = team.tasks
+    tasks = tasks.split()
+    if int(tasks[task - 1]) > 0:
+        return 0
+    if point == -1:
+        tasks[task-1] = str(int(tasks[task-1]) - 1)
+    else:
+        tasks[task - 1] = str(point + int(tasks[task - 1]))
+    s.query(Teams).filter(Teams.team_name == team_name).update({Teams.tasks: ' '.join(tasks)})
     s.commit()
-    return s.query(Teams).all()
 
-
-#register_team('bestteam', 'andrew', '7')
-# print(get_table())
-give_point("bestteam", 1, "4")
-give_point("bestteam", 3, "5")
-give_point("bestteam", 2, "-1")
