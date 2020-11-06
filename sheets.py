@@ -4,6 +4,8 @@ from orm_operations import *
 gc = pygsheets.authorize(client_secret='client_secret_391891465960-i956mfi2rjc439c8qtdblkgn6ktuhob2.apps.googleusercontent.com.json')
 #gc = pygsheets.authorize()
 
+alphabet = ["D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q"]
+
 sh = gc.open('Test')
 wks = sh.worksheet_by_title("67")
 wks.update_value('A1', "Название команды")
