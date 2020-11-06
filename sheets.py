@@ -26,6 +26,3 @@ def update_data(gr, room):
     if gr == 89:
         wks = sh.worksheet_by_title("89")
         wks.update_values('A'+str(room), table(89))
-
-
-update_data(89, 4)
