@@ -1,6 +1,6 @@
 import sys
 from orm_operations import *
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QCompleter
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QCompleter, QMessageBox
 from PyQt5.QtGui import QFont, QRegExpValidator
 from PyQt5.QtCore import QCoreApplication, QRegExp
 
@@ -28,12 +28,18 @@ class GiveIn(QWidget):
         self.no_problem.move(400, 350)
         self.no_problem.hide()
 
-        self.upload = QPushButton(self)
-        self.upload.move(800, 40)
-        self.upload.setText('Загрузить команды')
-        self.upload.clicked.connect(self.complete)
-        self.upload.clicked.connect(self.solved)
-        self.upload.clicked.connect(self.upload.hide)
+        self.already_solved = QLabel(self)
+        self.already_solved.setText('<b style="color: rgb(250, 55, 55);">Эта задача уже решена</b>')
+        self.already_solved.move(400, 350)
+        self.already_solved.hide()
+
+        self.start = QPushButton(self)
+        self.start.setGeometry(750, 40, 230, 60)
+        self.start.setText('Начать турнир')
+        self.start.setStyleSheet('QPushButton {font-weight: bold; font-size: 14pt; color: green;}')
+        self.start.clicked.connect(self.complete)
+        self.start.clicked.connect(self.solved)
+        self.start.clicked.connect(self.start.hide)
 
         self.name = QLabel(self)
         self.name.setText('<b>Название команды</b>')
@@ -41,6 +47,9 @@ class GiveIn(QWidget):
         self.name_input = QLineEdit(self)
         self.name_input.move(250, 48)
         self.name_input.textChanged.connect(self.check_team)
+        rx_name = QRegExp('[\S][\S\s]*')
+        validator = QRegExpValidator(rx_name, self)
+        self.name_input.setValidator(validator)
 
         self.num = QLabel(self)
         self.num.move(50, 100)
@@ -48,6 +57,9 @@ class GiveIn(QWidget):
         self.num_input = QLineEdit(self)
         self.num_input.move(250, 98)
         self.num_input.textChanged.connect(self.check_num)
+        rx_num = QRegExp('[\d]*')
+        validator = QRegExpValidator(rx_num, self)
+        self.num_input.setValidator(validator)
 
         self.result = QLabel(self)
         self.result.move(50, 170)
@@ -62,42 +74,63 @@ class GiveIn(QWidget):
         self.result_minus.setText('-')
         self.result_minus.setFont(QFont('Times', 20))
         self.result_minus.clicked.connect(self.minus)
+        self.disable()
 
     def check_team(self):
+        self.no_problem.hide()
+        self.already_solved.hide()
+        self.no_problem.hide()
         exists = False
         for team in teams:
             if self.name_input.text() == team:
                 exists = True
         if not exists:
             self.no_team.show()
-            self.result_plus.setEnabled(False)  #
-            self.result_minus.setEnabled(False) #
+            self.disable()
         else:
             self.no_team.hide()
-            self.result_plus.setEnabled(True)   ##
-            self.result_minus.setEnabled(True)  ##
+            if self.name_input.text() == '' or self.num_input.text() == '':
+                self.disable()
+            else:
+                self.enable()
 
     def check_num(self):
+        self.no_team.hide()
+        self.already_solved.hide()
+        self.no_problem.hide()
         if self.num_input.text() == '' or int(self.num_input.text()) > len(points):
             self.no_problem.show()
-            self.result_plus.setEnabled(False)  #
-            self.result_minus.setEnabled(False)  #
+            self.disable()
+        elif solved[self.name_input.text()][int(self.num_input.text()) - 1]:
+            self.already_solved.show()
+            self.disable()
         else:
             self.no_problem.hide()
-            self.result_plus.setEnabled(True)       ##
-            self.result_minus.setEnabled(True)      ##
+            if self.name_input.text() == '' or self.num_input.text() == '':
+                self.disable()
+            else:
+                self.enable()
 
     def plus(self):
         final_point = points[int(self.num_input.text()) - 1]
-        give_point(self.name_input.text(), int(self.num_input.text()), final_point)
-        self.result_plus.setEnabled(False)  #
-        self.result_minus.setEnabled(False) #
+        reply = QMessageBox.question(self, 'Message',
+                                     "Поставить + за задачу " + self.num_input.text() + " команде " + self.name_input.text() + "?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            give_point(self.name_input.text(), int(self.num_input.text()), final_point)
+            solved[self.name_input.text()][int(self.num_input.text()) - 1] = True
+            self.disable()
 
     def minus(self):
         final_point = -1
-        give_point(self.name_input.text(), int(self.num_input.text()), final_point)
-        self.result_plus.setEnabled(False)  #
-        self.result_minus.setEnabled(False) #
+        reply = QMessageBox.question(self, 'Message',
+                                     "Поставить - за задачу " + self.num_input.text() + " команде " + self.name_input.text() + "?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            give_point(self.name_input.text(), int(self.num_input.text()), final_point)
+            self.disable()
 
     def complete(self):
         completer = QCompleter(teams, self.name_input)
@@ -107,6 +140,22 @@ class GiveIn(QWidget):
         for i in teams:
             solved[i] = [False for n in range(len(points))]
 
+    def enable(self):
+        self.result_plus.setEnabled(True)
+        self.result_minus.setEnabled(True)
+
+    def disable(self):
+        self.result_plus.setEnabled(False)
+        self.result_minus.setEnabled(False)
+
+    def closeEvent(self, event):
+        reply = QMessageBox.question(self, 'Message', "Вы точно хотите выйти?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
 
 class Registration(QWidget):
     def __init__(self):
@@ -125,6 +174,10 @@ class Registration(QWidget):
         self.name_space.setText('<b style="color: rgb(250, 55, 55);">Введите название команды</b>')
         self.name_space.move(370, 350)
         self.name_space.hide()
+        self.noname_person = QLabel(self)
+        self.noname_person.setText('<b style="color: rgb(250, 55, 55);">Введите имя участника</b>')
+        self.noname_person.move(370, 350)
+        self.noname_person.hide()
         self.invalid_class = QLabel(self)
         self.invalid_class.setText('<b style="color: rgb(250, 55, 55);">Некорректный номер класса</b>')
         self.invalid_class.move(370, 350)
@@ -149,21 +202,29 @@ class Registration(QWidget):
         self.one.move(250, 100)
         self.one_input = QLineEdit(self)
         self.one_input.move(380, 98)
+        self.one_input.setValidator(validator)
+        self.one_input.textChanged.connect(self.check)
         self.two = QLabel(self)
         self.two.setText('2: Фамилия, имя')
         self.two.move(250, 150)
         self.two_input = QLineEdit(self)
         self.two_input.move(380, 148)
+        self.two_input.setValidator(validator)
+        self.two_input.textChanged.connect(self.check)
         self.three = QLabel(self)
         self.three.setText('3: Фамилия, имя')
         self.three.move(250, 200)
         self.three_input = QLineEdit(self)
         self.three_input.move(380, 198)
+        self.three_input.setValidator(validator)
+        self.three_input.textChanged.connect(self.check)
         self.four = QLabel(self)
         self.four.setText('4: Фамилия, имя')
         self.four.move(250, 250)
         self.four_input = QLineEdit(self)
         self.four_input.move(380, 248)
+        self.four_input.setValidator(validator)
+        self.four_input.textChanged.connect(self.check)
 
         self.one_class = QLabel(self)
         self.one_class.setText('Класс')
@@ -171,33 +232,35 @@ class Registration(QWidget):
         self.one_class_input = QLineEdit(self)
         self.one_class_input.move(650, 98)
         self.one_class_input.textChanged.connect(self.check)
+        self.one_class_input.setValidator(validator)
         self.two_class = QLabel(self)
         self.two_class.setText('Класс')
         self.two_class.move(600, 150)
         self.two_class_input = QLineEdit(self)
         self.two_class_input.move(650, 148)
         self.two_class_input.textChanged.connect(self.check)
+        self.two_class_input.setValidator(validator)
         self.three_class = QLabel(self)
         self.three_class.setText('Класс')
         self.three_class.move(600, 200)
         self.three_class_input = QLineEdit(self)
         self.three_class_input.move(650, 198)
         self.three_class_input.textChanged.connect(self.check)
+        self.three_class_input.setValidator(validator)
         self.four_class = QLabel(self)
         self.four_class.setText('Класс')
         self.four_class.move(600, 250)
         self.four_class_input = QLineEdit(self)
         self.four_class_input.move(650, 248)
         self.four_class_input.textChanged.connect(self.check)
+        self.four_class_input.setValidator(validator)
 
         self.ok = QPushButton('OK', self)
         self.ok.clicked.connect(self.team_people)
         self.ok.move(50, 350)
 
         self.ready = QPushButton('READY', self)
-        self.ready.clicked.connect(self.send)
-        self.ready.clicked.connect(self.give_in)
-        self.ready.clicked.connect(self.hide)
+        self.ready.clicked.connect(self.finish_reg)
         self.ready.move(850, 350)
 
     def send(self):
@@ -234,6 +297,7 @@ class Registration(QWidget):
     def check(self):
         self.name_space.hide()
         self.team_exists.hide()
+        self.noname_person.hide()
         self.invalid_class.hide()
         if self.name_input.text() == '':
             self.ok.setEnabled(False)
@@ -241,26 +305,47 @@ class Registration(QWidget):
         elif self.name_input.text() in teams_people.keys():
             self.ok.setEnabled(False)
             self.team_exists.show()
-            self.invalid_class.show()
+        elif self.one_input.text() == '' or self.two_input.text() == '' \
+                or self.three_input.text() == '' or self.four_input.text() == '':
+            self.ok.setEnabled(False)
+            self.noname_person.show()
         elif self.one_class_input.text() not in possible_classes or \
                 self.two_class_input.text() not in possible_classes or \
                 self.three_class_input.text() not in possible_classes or \
                 self.four_class_input.text() not in possible_classes:
             self.ok.setEnabled(False)
             self.invalid_class.show()
-           # self.team_exists.show()
         else:
             self.ok.setEnabled(True)
             self.team_exists.hide()
             self.invalid_class.hide()
             self.name_space.hide()
 
+    def closeEvent(self, event):
+        reply = QMessageBox.question(self, 'Message', "Вы точно хотите выйти?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
+
+    def finish_reg(self, event):
+        reply = QMessageBox.question(self, 'Message', "Вы точно хотите завершить регистрацию?\n"
+                                                      "Количество команд: " + str(len(teams_people.keys())),
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            self.send()
+            self.give_in()
+            self.hide()
+
 teams_people = {}
 teams_problems = {}
 solved = {}
 possible_classes = ('5', '6', '7', '8', '9', '-')
 teams = []
-points = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+points = [1, 1, 2, 2, 3, 3]
 name_error = False
 noname_error = False
 class_error = False
