@@ -19,10 +19,11 @@ wks.update_value('C1', "Классы команды")
 wks.update_value('D1', "Баллы за задачи")
 
 
-def update_data(gr, room):
+def update_data(gr, row):
     if gr == 67:
         wks = sh.worksheet_by_title("67")
-        wks.update_values('A'+str(room), table(67))
+        wks.update_values('A'+str(row), table(67))
+
     if gr == 89:
         wks = sh.worksheet_by_title("89")
-        wks.update_values('A'+str(room), table(89))
+        wks.update_values('A'+str(row), table(89))
