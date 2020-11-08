@@ -30,17 +30,20 @@ def give_point(team_name, task, point):
 
 def table(grades):
     s = Session()
-    if grades == 89:
-        t = s.query(Teams).filter(Teams.max_grade > 7).all()
-    if grades == 67:
-        t = s.query(Teams).filter(Teams.max_grade < 8).all()
+    t = s.query(Teams).filter(Teams.max_grade == grades).all()
     child_list = []
     result_list = []
     for u in t:
         child_list.clear()
         child_list.append(u.__dict__['team_name'])
-        child_list.append(u.__dict__['team_members'])
-        child_list.append(u.__dict__['grades'])
-        child_list.append(u.__dict__['tasks'])
+        for i in u.__dict__['tasks'].split():
+            child_list.append(i)
         result_list.append(copy.copy(child_list))
     return result_list
+
+
+def junior_count(grade):
+    s = Session()
+    if grade == 6 or grade == 8:
+        return 2
+    return s.query(Teams).filter(Teams.max_grade == grade).count()
