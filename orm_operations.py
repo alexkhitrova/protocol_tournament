@@ -41,7 +41,9 @@ def table(grades):
         result_list.append(copy.copy(child_list))
     return result_list
 
-def unior_count(grade):
+def junior_count(grade):
     s = Session()
+    if grade == 6 or grade == 8:
+        return 2
     return s.query(Teams).filter(Teams.max_grade == grade).count()
 
