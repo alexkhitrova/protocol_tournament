@@ -39,13 +39,7 @@ def table(grades):
     for u in t:
         child_list.clear()
         child_list.append(u.__dict__['team_name'])
-        child_list.append(u.__dict__['team_members'])
-        child_list.append(u.__dict__['grades'])
         for i in u.__dict__['tasks'].split():
             child_list.append(i)
         result_list.append(copy.copy(child_list))
     return result_list
-
-
-
-print(table(67))
