@@ -16,10 +16,10 @@ wks.update_value('B1', "Баллы за задачи")
 
 
 def update_data(gr, row):
-    if gr == 67:
+    if gr < 8:
         wks = sh.worksheet_by_title("67")
-        wks.update_values('A'+str(row), table(67))
+        wks.update_values('A'+str(row), table(gr))
 
-    if gr == 89:
+    if gr > 7:
         wks = sh.worksheet_by_title("89")
-        wks.update_values('A'+str(row), table(89))
+        wks.update_values('A'+str(row), table(gr))
