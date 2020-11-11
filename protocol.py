@@ -64,19 +64,6 @@ class Registration(QWidget):
         self.two_input.setValidator(validator_names)
         self.two_input.textChanged.connect(self.check)
         self.three = QLabel(self)
-        self.three.setText('3: Фамилия, имя')
-        self.three.move(250, 200)
-        self.three_input = QLineEdit(self)
-        self.three_input.move(380, 198)
-        self.three_input.setValidator(validator_names)
-        self.three_input.textChanged.connect(self.check)
-        self.four = QLabel(self)
-        self.four.setText('4: Фамилия, имя')
-        self.four.move(250, 250)
-        self.four_input = QLineEdit(self)
-        self.four_input.move(380, 248)
-        self.four_input.setValidator(validator_names)
-        self.four_input.textChanged.connect(self.check)
 
         self.one_class = QLabel(self)
         self.one_class.setText('Класс')
@@ -93,19 +80,6 @@ class Registration(QWidget):
         self.two_class_input.textChanged.connect(self.check)
         self.two_class_input.setValidator(validator_nums)
         self.three_class = QLabel(self)
-        self.three_class.setText('Класс')
-        self.three_class.move(600, 200)
-        self.three_class_input = QLineEdit(self)
-        self.three_class_input.move(650, 198)
-        self.three_class_input.textChanged.connect(self.check)
-        self.three_class_input.setValidator(validator_nums)
-        self.four_class = QLabel(self)
-        self.four_class.setText('Класс')
-        self.four_class.move(600, 250)
-        self.four_class_input = QLineEdit(self)
-        self.four_class_input.move(650, 248)
-        self.four_class_input.textChanged.connect(self.check)
-        self.four_class_input.setValidator(validator_nums)
 
         self.ok = QPushButton('OK', self)
         self.ok.clicked.connect(self.team_people)
@@ -124,12 +98,9 @@ class Registration(QWidget):
 
     def team_people(self):
         teams_people[self.name_input.text()] = ((self.one_input.text(), self.one_class_input.text()),
-                                                (self.two_input.text(), self.two_class_input.text()),
-                                                (self.three_input.text(), self.three_class_input.text()),
-                                                (self.four_input.text(), self.four_class_input.text()))
-        people = [self.one_input.text(), self.two_input.text(), self.three_input.text(), self.four_input.text()]
-        classes = [self.one_class_input.text(), self.two_class_input.text(), self.three_class_input.text(),
-                   self.four_class_input.text()]
+                                                (self.two_input.text(), self.two_class_input.text()))
+        people = [self.one_input.text(), self.two_input.text()]
+        classes = [self.one_class_input.text(), self.two_class_input.text()]
         if '-' in people:
             people.remove('-')
         if '-' in classes:
@@ -141,10 +112,6 @@ class Registration(QWidget):
         self.one_class_input.setText('')
         self.two_input.setText('')
         self.two_class_input.setText('')
-        self.three_input.setText('')
-        self.three_class_input.setText('')
-        self.four_input.setText('')
-        self.four_class_input.setText('')
 
     def check(self):
         self.name_space.hide()
@@ -157,14 +124,11 @@ class Registration(QWidget):
         elif self.name_input.text() in teams_people.keys():
             self.ok.setEnabled(False)
             self.team_exists.show()
-        elif self.one_input.text() == '' or self.two_input.text() == '' \
-                or self.three_input.text() == '' or self.four_input.text() == '':
+        elif self.one_input.text() == '' or self.two_input.text() == '':
             self.ok.setEnabled(False)
             self.noname_person.show()
         elif self.one_class_input.text() not in possible_classes or \
-                self.two_class_input.text() not in possible_classes or \
-                self.three_class_input.text() not in possible_classes or \
-                self.four_class_input.text() not in possible_classes:
+                self.two_class_input.text() not in possible_classes:
             self.ok.setEnabled(False)
             self.invalid_class.show()
         else:
