@@ -24,6 +24,8 @@ def give_point(team_name, task, point):
         tasks[task-1] = str(int(tasks[task-1]) - 1)
     else:
         tasks[task - 1] = str(point + int(tasks[task - 1]))
+        if int(tasks[task-1]) < 0:
+            tasks[task-1] = "0"
     s.query(Teams).filter(Teams.team_name == team_name).update({Teams.tasks: ' '.join(tasks)})
     s.commit()
 
