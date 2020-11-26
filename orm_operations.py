@@ -62,3 +62,12 @@ def give_bonus_point(team_name, point):
     s.query(Teams).filter(Teams.team_name == team_name).update({Teams.bonus_task: task})
     s.commit()
 
+
+def get_bonus(team_name):
+    s = Session()
+    team = s.query(Teams).filter(Teams.team_name == team_name).first()
+    return team.bonus_task
+
+
+
+
