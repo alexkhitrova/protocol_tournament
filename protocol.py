@@ -168,7 +168,7 @@ class GiveIn(QWidget):
 
         self.already_solved = QLabel(self)
         self.already_solved.setText('<b style="color: rgb(250, 55, 55);">Задача уже решена</b>')
-        self.already_solved.move(350, 350)
+        self.already_solved.move(400, 350)
         self.already_solved.hide()
 
         self.no_team = QLabel(self)
@@ -180,10 +180,12 @@ class GiveIn(QWidget):
         self.no_problem.move(400, 350)
         self.no_problem.hide()
 
-        self.already_solved = QLabel(self)
-        self.already_solved.setText('<b style="color: rgb(250, 55, 55);">Эта задача уже решена</b>')
-        self.already_solved.move(400, 350)
-        self.already_solved.hide()
+        self.goto_bonus = QPushButton(self)
+        self.goto_bonus.setGeometry(750, 40, 230, 60)
+        self.goto_bonus.setText('Бонусная задача')
+        self.goto_bonus.setEnabled(False)
+        self.goto_bonus.hide()
+        self.goto_bonus.clicked.connect(self.bonus_track)
 
         self.start = QPushButton(self)
         self.start.setGeometry(750, 40, 230, 60)
@@ -192,6 +194,8 @@ class GiveIn(QWidget):
         self.start.clicked.connect(self.complete)
         self.start.clicked.connect(self.solved)
         self.start.clicked.connect(self.start.hide)
+        self.start.clicked.connect(self.goto_bonus.show)
+
 
         self.name = QLabel(self)
         self.name.setText('<b>Название команды</b>')
@@ -228,6 +232,42 @@ class GiveIn(QWidget):
         self.result_minus.clicked.connect(self.minus)
         self.disable()
 
+        self.bonus = QLineEdit(self)
+        self.bonus.move(250, 165)
+        self.bonus.setValidator(validator)
+        self.bonus.hide()
+
+        self.send_points = QPushButton(self)
+        self.send_points.setText('Готово')
+        self.send_points.setStyleSheet('QPushButton {font-weight: bold;}')
+        self.send_points.setGeometry(250, 200, 175, 40)
+        self.send_points.clicked.connect(self.add_bonus_points)
+        self.send_points.hide()
+
+    def bonus_track(self):
+        reply = QMessageBox.question(self, 'Message', "Вы точно хотите перейти  бонусной задаче?",
+                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            self.bonus.show()
+            self.send_points.show()
+            self.goto_bonus.setEnabled(False)
+            self.result_plus.hide()
+            self.result_minus.hide()
+            self.num.hide()
+            self.num_input.hide()
+            give_bonus_point(self.name_input.text(), 0)
+
+    def add_bonus_points(self):
+        reply = QMessageBox.question(self, 'Message', "Вы точно хотите поставить " + self.bonus.text() + " за бонусную задачу?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            give_bonus_point(self.name_input.text(), int(self.bonus.text()))
+            self.name_input.setText('')
+            self.bonus.setText('')
+
+
     def check_team(self):
         self.no_problem.hide()
         self.already_solved.hide()
@@ -236,15 +276,27 @@ class GiveIn(QWidget):
         for team in teams:
             if self.name_input.text() == team:
                 exists = True
+                if get_bonus(self.name_input.text()) == -1:
+                    self.goto_bonus.setEnabled(True)
+                    self.num.show()
+                    self.num_input.show()
+                    self.result_plus.show()
+                    self.result_minus.show()
+                    self.bonus.hide()
+                    self.send_points.hide()
+                else:
+                    self.num.hide()
+                    self.num_input.hide()
+                    self.result_plus.hide()
+                    self.result_minus.hide()
+                    self.bonus.show()
+                    self.send_points.show()
         if not exists:
             self.no_team.show()
             self.disable()
+            self.goto_bonus.setEnabled(False)
         else:
             self.no_team.hide()
-            if self.name_input.text() == '' or self.num_input.text() == '':
-                self.disable()
-            else:
-                self.enable()
 
     def check_num(self):
         self.no_team.hide()
