@@ -15,6 +15,7 @@ class Teams(Base):
     grades = Column(String)
     max_grade = Column(Integer)
     tasks = Column(String, default="0 0 0 0 0 0")
+    bonus_task = Column(Integer, default=-1)
 
 
 Base.metadata.create_all(engine)  # sends CREATE TABLE

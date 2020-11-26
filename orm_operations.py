@@ -49,3 +49,13 @@ def junior_count(grade):
         return 2
     return s.query(Teams).filter(Teams.max_grade == grade).count()
 
+
+def give_bonus_point(team_name, point):
+    s = Session()
+    team = s.query(Teams).filter(Teams.team_name == team_name).first()
+    task = team.bonus_task
+    if task == -1:
+        task = 0
+    task = task+point
+    s.query(Teams).filter(Teams.team_name == team_name).update({Teams.bonus_task: task})
+    s.commit()
