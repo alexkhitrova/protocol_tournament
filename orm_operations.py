@@ -62,5 +62,3 @@ def give_bonus_point(team_name, point):
     s.query(Teams).filter(Teams.team_name == team_name).update({Teams.bonus_task: task})
     s.commit()
 
-
-give_bonus_point("Lololowka", 0)

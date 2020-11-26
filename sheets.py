@@ -27,6 +27,3 @@ def update_data(gr, row):
     if gr > 7:
         wks = sh.worksheet_by_title("89")
         wks.update_values('A'+str(row), table(gr))
-
-
-update_data(7, 2)
