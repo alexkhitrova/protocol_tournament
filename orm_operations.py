@@ -40,6 +40,8 @@ def table(grades):
         child_list.append(u.__dict__['team_name'])
         for i in u.__dict__['tasks'].split():
             child_list.append(i)
+        if u.__dict__['bonus_task']!=-1:
+            child_list.append(u.__dict__['bonus_task'])
         result_list.append(copy.copy(child_list))
     return result_list
 
@@ -59,3 +61,6 @@ def give_bonus_point(team_name, point):
     task = task+point
     s.query(Teams).filter(Teams.team_name == team_name).update({Teams.bonus_task: task})
     s.commit()
+
+
+give_bonus_point("Lololowka", 0)
