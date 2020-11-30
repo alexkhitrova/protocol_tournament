@@ -9,13 +9,13 @@ alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"
 sh = gc.open('Test')
 wks = sh.worksheet_by_title("67")
 wks.update_value('A1', "Команда")
-for i in range(1, 7):
-    wks.update_value(alphabet[i]+'1', "Задача "+str(i))
+for i in range(1, 10):
+    wks.update_value(alphabet[i]+'1', str(i))
 wks.update_value("H1", "Бонусная задача")
 wks = sh.worksheet_by_title("89")
 wks.update_value('A1', "Команда")
-for i in range(1, 7):
-    wks.update_value(alphabet[i]+'1', "Задача "+str(i))
+for i in range(1, 10):
+    wks.update_value(alphabet[i]+'1', str(i))
 wks.update_value("H1", "Бонусная задача")
 
 
