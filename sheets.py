@@ -11,12 +11,13 @@ wks = sh.worksheet_by_title("67")
 wks.update_value('A1', "Команда")
 for i in range(1, 10):
     wks.update_value(alphabet[i]+'1', str(i))
-wks.update_value("H1", "Бонусная задача")
+wks.update_value("K1", "Бонусная задача")
 wks = sh.worksheet_by_title("89")
 wks.update_value('A1', "Команда")
 for i in range(1, 10):
     wks.update_value(alphabet[i]+'1', str(i))
-wks.update_value("H1", "Бонусная задача")
+wks.update_value("K1", "Бонусная задача")
+
 
 
 def update_data(gr, row):
@@ -27,3 +28,5 @@ def update_data(gr, row):
     if gr > 7:
         wks = sh.worksheet_by_title("89")
         wks.update_values('A'+str(row), table(gr))
+
+
