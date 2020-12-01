@@ -1,5 +1,6 @@
 import sys
 from orm_operations import *
+from sheets import *
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QCompleter, QMessageBox
 from PyQt5.QtGui import QFont, QRegExpValidator
 from PyQt5.QtCore import QCoreApplication, QRegExp
@@ -106,6 +107,7 @@ class Registration(QWidget):
         if '-' in classes:
             classes.remove('-')
         register_team(self.name_input.text(), ', '.join(people), ', '.join(classes), max(classes))
+        update_data(max(classes), get_count(max(classes)))
 
         self.name_input.setText('')
         self.one_input.setText('')
@@ -263,7 +265,8 @@ class GiveIn(QWidget):
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
-            give_bonus_point(self.name_input.text(), int(self.bonus.text()))
+            a = give_bonus_point(self.name_input.text(), int(self.bonus.text()))
+            update_data(a, get_count(a))
             self.name_input.setText('')
             self.bonus.setText('')
 
@@ -322,7 +325,8 @@ class GiveIn(QWidget):
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
-            give_point(self.name_input.text(), int(self.num_input.text()), final_point)
+            a = give_point(self.name_input.text(), int(self.num_input.text()), final_point)
+            update_data(a, get_count(a))
             solved[self.name_input.text()][int(self.num_input.text()) - 1] = True
             self.disable()
 
@@ -333,7 +337,8 @@ class GiveIn(QWidget):
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
-            give_point(self.name_input.text(), int(self.num_input.text()), final_point)
+            a = give_point(self.name_input.text(), int(self.num_input.text()), final_point)
+            update_data(a, get_count(a))
             self.disable()
 
     def complete(self):
@@ -365,7 +370,7 @@ class GiveIn(QWidget):
 teams_people = {}
 solved = {}
 teams = []
-points = [1, 1, 2, 2, 3, 3]
+points = [1, 2, 8, 3, 8, 4, 7, 5, 6]
 possible_classes = ('5', '6', '7', '8', '9', '-')
 
 
