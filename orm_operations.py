@@ -33,7 +33,10 @@ def give_point(team_name, task, point):
 
 def table(grades):
     s = Session()
-    t = s.query(Teams).filter(Teams.max_grade == grades).all()
+    if grades < 8:
+        t = s.query(Teams).filter(Teams.max_grade < 8).all()
+    else:
+        t = s.query(Teams).filter(Teams.max_grade > 7).all()
     child_list = []
     result_list = []
     for u in t:
@@ -43,6 +46,8 @@ def table(grades):
             child_list.append(i)
         if u.__dict__['bonus_task']!=-1:
             child_list.append(u.__dict__['bonus_task'])
+        else:
+            child_list.append(0)
         result_list.append(copy.copy(child_list))
     return result_list
 

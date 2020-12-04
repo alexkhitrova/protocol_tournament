@@ -1,9 +1,8 @@
 import sys
-from orm_operations import *
 from sheets import *
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QCompleter, QMessageBox
 from PyQt5.QtGui import QFont, QRegExpValidator
-from PyQt5.QtCore import QCoreApplication, QRegExp
+from PyQt5.QtCore import QRegExp
 
 
 class Registration(QWidget):
@@ -106,8 +105,8 @@ class Registration(QWidget):
             people.remove('-')
         if '-' in classes:
             classes.remove('-')
-        register_team(self.name_input.text(), ', '.join(people), ', '.join(classes), max(classes))
-        update_data(max(classes), get_count(max(classes)))
+        register_team(self.name_input.text(), ', '.join(people), ', '.join(classes), int(max(classes)))
+        update_data(int(max(classes)))
 
         self.name_input.setText('')
         self.one_input.setText('')
@@ -266,7 +265,7 @@ class GiveIn(QWidget):
 
         if reply == QMessageBox.Yes:
             a = give_bonus_point(self.name_input.text(), int(self.bonus.text()))
-            update_data(a, get_count(a))
+            update_data(a)
             self.name_input.setText('')
             self.bonus.setText('')
 
@@ -326,9 +325,11 @@ class GiveIn(QWidget):
 
         if reply == QMessageBox.Yes:
             a = give_point(self.name_input.text(), int(self.num_input.text()), final_point)
-            update_data(a, get_count(a))
+            update_data(a)
             solved[self.name_input.text()][int(self.num_input.text()) - 1] = True
             self.disable()
+            self.name_input.setText('')
+            self.num_input.setText('')
 
     def minus(self):
         final_point = -1
@@ -338,8 +339,10 @@ class GiveIn(QWidget):
 
         if reply == QMessageBox.Yes:
             a = give_point(self.name_input.text(), int(self.num_input.text()), final_point)
-            update_data(a, get_count(a))
+            update_data(a)
             self.disable()
+            self.name_input.setText('')
+            self.num_input.setText('')
 
     def complete(self):
         completer = QCompleter(teams, self.name_input)
